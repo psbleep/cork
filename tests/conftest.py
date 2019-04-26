@@ -37,3 +37,9 @@ def cleanup_deploy_script(request):
 def setup_deploy_script():
     with open(DEPLOY_SCRIPT_FILE, "w") as f:
         f.write(DEPLOY_SCRIPT.format(**DEPLOY_SCRIPT_KWARGS))
+
+
+@pytest.fixture
+def mock_cork(mocker):
+    mocker.patch("cork.create_deploy_script")
+    mocker.patch("cork.create_executable")
