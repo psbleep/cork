@@ -16,5 +16,5 @@ def test_create_deploy_script(setup_app_files):
 def test_create_executable(setup_deploy_script, cleanup_deploy_script, setup_app_files):
     create_executable("example")
     assert os.path.exists(os.path.join(BASE_DIR, "dist"))
-    assert os.path.exists(os.path.join(BASE_DIR, "dist/example_app"))
-    assert os.path.exists(os.path.join(BASE_DIR, "dist/example_app/example_app"))
+    assert os.path.exists(os.path.join(BASE_DIR, "dist/deps"))
+    assert os.path.exists(os.path.join(BASE_DIR, "dist/deps/example_app"))

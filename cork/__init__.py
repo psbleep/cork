@@ -1,4 +1,5 @@
 import os
+import shutil
 
 
 DEPLOY_SCRIPT = """import threading
@@ -54,3 +55,11 @@ PYINSTALLER_COMMAND = "pyinstaller --clean --add-data {app_source}:./{app_source
 
 def create_executable(app_source):
     os.system(PYINSTALLER_COMMAND.format(app_source=app_source))
+    base_dir = os.getcwd()
+    dist_dir = os.path.join(base_dir, "dist")
+    app_files = os.path.join(dist_dir, "{}_app".format(app_source))
+    deps_dir = os.path.join(dist_dir, "deps")
+    executable = os.path.join(deps_dir, "{}_app".format(app_source))
+    launcher = os.path.join(dist_dir, app_source)
+    shutil.move(app_files, deps_dir)
+    os.symlink(executable, launcher)

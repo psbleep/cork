@@ -16,9 +16,9 @@ If your Flask application lived in a module called `example`, for example, you c
 
 `cork example`
 
-PyInstaller runs under the hood to package up the dependencies and create the executable. Your executable will live in e.g. `dist/example_app/example_app`.
+PyInstaller runs under the hood to package up the dependencies and create the executable. `cork` places the dependencies and the executable file into a `deps` directory, and creates a symlink launcher at the root of the `dist` directory.
 
-You can distribute this `dist/example_app` directory to any computer and it will execute your web application as a terminal interface, whether Python or any of your dependencies are installed or not.
+You can distribute the contents of this `dist` directory to any computer and it will execute your web application as a terminal interface, whether Python or any of your dependencies are installed or not. *Lynx is required currently. You must compile on the target operating system.*
 
 ## Distributing cork apps
 
