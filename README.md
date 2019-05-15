@@ -11,7 +11,7 @@ Extreme alpha stages. I have only run this on a single computer (Linux with Pyth
 
 `pip install cork`
 
-This is published in the official Python Packaging Index. Good jokes are about commitment.
+This is published in the official Python Packaging Index. Good jokes are about commitment. The package is very large because it packages binaries for every supported platform/browser combination with it.
 
 ## Quickstart
 

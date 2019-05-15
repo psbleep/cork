@@ -18,6 +18,7 @@ setuptools.setup(
         "PyInstaller==3.4",
         "requests==2.21.0"
     ],
+    include_package_data=True,
     entry_points="""
         [console_scripts]
         cork=cork.__main__:cli
