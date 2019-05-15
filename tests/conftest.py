@@ -3,43 +3,67 @@ import shutil
 
 import pytest
 
-from cork import DEPLOY_SCRIPT
+from click.testing import CliRunner
 
-from tests import (
-    DEPLOY_SCRIPT_FILE, DEPLOY_SCRIPT_KWARGS,
-    EXAMPLE_APP_DIR, DIST, BUILD, SPEC
-)
+from tests import SOURCE, SOURCE_SPECFILE
+
+
+DIRS = ["dist", "build", SOURCE]
+FILES = ["corkfile", SOURCE_SPECFILE]
 
 
 @pytest.fixture
-def setup_app_files(request):
+def cleanup_corkfile(request):
     def cleanup():
-        for directory in [EXAMPLE_APP_DIR, DIST, BUILD]:
+        if os.path.exists("corkfile"):
+            os.remove("corkfile")
+    request.addfinalizer(cleanup)
+
+
+@pytest.fixture
+def create_corkfile(request):
+    def cleanup():
+        os.remove("corkfile")
+    request.addfinalizer(cleanup)
+    with open("corkfile", "w") as f:
+        f.write("")
+
+
+@pytest.fixture
+def other_specfile(request):
+    def cleanup():
+        os.remove(".other.spec")
+    request.addfinalizer(cleanup)
+    with open(".other.spec", "w") as f:
+        f.write("")
+
+
+@pytest.fixture
+def pyinstaller_files(request):
+    def cleanup():
+        for directory in DIRS:
             if os.path.exists(directory):
                 shutil.rmtree(directory)
-        if os.path.exists(SPEC):
-            os.remove(SPEC)
-    if os.path.exists(EXAMPLE_APP_DIR):
-        shutil.rmtree(EXAMPLE_APP_DIR)
-    os.mkdir(EXAMPLE_APP_DIR)
+        for file_name in FILES:
+            if os.path.exists(file_name):
+                os.remove(file_name)
     request.addfinalizer(cleanup)
+    for directory in DIRS:
+        os.mkdir(directory)
+    for file_name in FILES:
+        with open(file_name, "w") as f:
+            f.write("")
 
 
 @pytest.fixture
-def cleanup_deploy_script(request):
-    def cleanup():
-        if os.path.exists(DEPLOY_SCRIPT_FILE):
-            os.remove(DEPLOY_SCRIPT_FILE)
-    request.addfinalizer(cleanup)
-
-
-@pytest.fixture
-def setup_deploy_script():
-    with open(DEPLOY_SCRIPT_FILE, "w") as f:
-        f.write(DEPLOY_SCRIPT.format(**DEPLOY_SCRIPT_KWARGS))
+def runner():
+    return CliRunner()
 
 
 @pytest.fixture
 def mock_cork(mocker):
-    mocker.patch("cork.create_deploy_script")
+    mocker.patch("cork.create_corkfile")
     mocker.patch("cork.create_executable")
+    mocker.patch("cork.bundle_dependencies")
+    mocker.patch("cork.get_cleanup_list")
+    mocker.patch("cork.cleanup_files")

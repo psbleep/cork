@@ -1,0 +1,52 @@
+#! /usr/bin/env python3
+import os
+import sys
+
+import threading
+
+import requests
+
+from flask import request
+
+CONFIG_DIR = os.environ.get(
+    "XDG_CONFIG_HOME",
+    os.path.join(os.path.expanduser("~"), ".config")
+)
+CORK_DIR = os.path.join(CONFIG_DIR, "cork")
+BROWSERS_DIR = os.path.join(CORK_DIR, "browsers")
+BROWSER_BIN = os.path.join(BROWSERS_DIR, "browsh")
+APP_DIR = os.path.join(CORK_DIR, "example/")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BUNDLE_DIR = os.path.join(BASE_DIR)
+if os.path.exists(BUNDLE_DIR):
+    if not os.path.exists(CORK_DIR):
+        os.mkdir(CORK_DIR)
+        os.mkdir(BROWSERS_DIR)
+    if not os.path.exists(BROWSER_BIN):
+        os.rename(os.path.join(BUNDLE_DIR, "browsh"),
+                  os.path.join(BROWSERS_DIR, "browsh"))
+    else:
+        os.remove(os.path.join(BUNDLE_DIR, "browsh"))
+    os.rename(BUNDLE_DIR, APP_DIR)
+sys.path.insert(0, APP_DIR)
+
+
+from example/ import app
+
+app.root_path = APP_DIR
+
+
+@app.route(teardown)
+def teardown():
+    func = request.environ.get("werkzeug.server.shutdown")
+    func()
+    return "Application shutdown."
+
+
+if __name__ == "__main__":
+    flask_thread = threading.Thread(target=app.run)
+    flask_thread.start()
+    os.system(BROWSER_BIN + " http://localhost:5000")
+    requests.get("http://localhost:5000/shutdown")
+    flask_thread.join()
